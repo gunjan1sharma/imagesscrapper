@@ -8,17 +8,26 @@ import {
   TextField,
 } from "@mui/material";
 import DownloadImage from "../assets/images/download.png";
-import React, { ChangeEventHandler, useEffect, useState } from "react";
+import React, {
+  ChangeEventHandler,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import ReactPlayer from "react-player";
 import axios from "axios";
 import { Image, Root } from "../extras/types";
 import SingleComponent from "../components/SingleComponent";
 import ImageComponent from "../components/ImageComponent";
+import FeatureIntro from "../components/FeatureIntro";
+import { ColorContext } from "../extras/ColorContext";
 
-const API_BASE_URL = `http://192.168.1.88:9999/extras/v1/api/parsing/image-parser?siteUrl=`;
+const API_BASE_URL = `https://appnor-backend.onrender.com/extras/v1/api/parsing/image-parser?siteUrl=`;
 var static_site_url = "";
 
 function HomePage(props: any) {
+  const colorContex = useContext(ColorContext);
   const [videoUrl, setVideoUrl] = useState("");
   const [inVideoUrl, setInVideoUrl] = useState("");
   const [audioResponse, setAudioResponse] = useState<Image[]>();
@@ -26,16 +35,18 @@ function HomePage(props: any) {
   const [isTermsAggred, setIsTermsAggred] = useState(true);
   const [isDownloadSuccess, setIsDownloadSuccess] = useState(false);
   const [open, setOpen] = React.useState(false);
+  const scrollRef = useRef<any>(null);
 
   const [displayedItems, setDisplayedItems] = useState<Image[]>();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
+    scrollToDiv();
     // setIsDownloadSuccess(true);
     // setDisplayedItems(audioResponse.links.slice(0, itemsPerPage));
     return () => {};
-  }, []);
+  }, [colorContex.point]);
 
   const handlePageChange = (event: any, newPage: any): any => {
     setCurrentPage(newPage);
@@ -147,6 +158,13 @@ function HomePage(props: any) {
     window.open(audioUrl, "_blank");
   }
 
+  function scrollToDiv() {
+    if (colorContex.point !== 0) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+      colorContex.setPoint(0);
+    }
+  }
+
   const backdrop = (
     <React.Fragment>
       <Backdrop
@@ -165,8 +183,15 @@ function HomePage(props: any) {
   );
 
   return (
-    <div className="m-10 flex flex-col items-center justify-center">
+    <div
+      ref={scrollRef}
+      className="md:m-10 sm:m-5 flex flex-col items-center justify-center"
+    >
       {backdrop}
+      <FeatureIntro
+        heading="Unlock the Visual Riches of the Web"
+        desc="Tired of hunting for images one-by-one?  Release the full potential of visual inspiration with our effortless image-scraping tool! Simply enter any website and watch as we gather every captivating image, delivering them right to your fingertips! Don't miss a single pixel of inspiration – let's get scraping!"
+      />
       <div className="flex flex-col items-center border shadow-lg p-4">
         <TextField
           fullWidth

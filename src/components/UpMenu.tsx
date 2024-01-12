@@ -2,6 +2,7 @@ import React, {
   MouseEventHandler,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import {
@@ -14,7 +15,6 @@ import {
   InputAdornment,
   InputBaseClasses,
   InputLabel,
-  Link,
   List,
   Menu,
   MenuItem,
@@ -23,6 +23,7 @@ import {
   Typography,
 } from "@mui/material";
 import ColorImage from "../assets/images/colour.png";
+import { Link } from "react-router-dom";
 import LogoImage from "../assets/images/link.png";
 import { ColorContext } from "../extras/ColorContext";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -73,6 +74,7 @@ const hexColors: string[] = [
 ];
 
 function UpMenu(props: any) {
+  const headerRef = useRef<any>(null);
   const [headingColor, setHeadingColor] = useState("");
   const [deleted, setDeleted] = useState(false);
   const { color, setColor } = useContext(ColorContext);
@@ -106,6 +108,34 @@ function UpMenu(props: any) {
     }
     return allValues;
   }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const header = headerRef.current;
+      if (scrollPosition >= window.innerHeight / 3) {
+        header.classList.add("fixed", "top-0", "z-50", "bg-white");
+        header.classList.remove(
+          "bg-gradient-to-r",
+          "from-yellow-200",
+          "via-gray-100",
+          "to-yellow-200"
+        );
+      }
+      if (scrollPosition === 0) {
+        header.classList.remove("fixed", "top-0");
+        header.classList.add(
+          "bg-gradient-to-r",
+          "from-yellow-200",
+          "via-gray-100",
+          "to-yellow-200"
+        );
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const id = updateColor();
@@ -184,9 +214,10 @@ function UpMenu(props: any) {
 
   return (
     <div>
-      {/* {drawer} */}
-
-      <div className="w-full flex items-center justify-between border shadow-md">
+      <div
+        ref={headerRef}
+        className="w-full flex items-center justify-between shadow-md bg-gradient-to-r from-yellow-200 via-gray-100 to-yellow-200"
+      >
         <div>
           <IconButton onClick={() => setOpen(true)}>
             <MenuIcon className="ml-2 md:ml-6" fontSize="large" />
@@ -194,17 +225,15 @@ function UpMenu(props: any) {
         </div>
 
         <div className="flex items-center justify-center">
-          <img
-            alt=""
-            src={LogoImage}
-            className="w-10 h-10 md:w-14 md:h-14"
-          />
-          <h1
-            style={{ color: headingColor }}
-            className="p-5 text-center font-sans text-xl sm:text-4xl font-extrabold"
-          >
-           Image Scrapper
-          </h1>
+          <img alt="" src={LogoImage} className="w-10 h-10 md:w-14 md:h-14" />
+          <Link to="www.images-scrapper.web.app">
+            <h1
+              //style={{ color: headingColor }}
+              className="p-5 text-center text-yellow-500 font-bold text-xl sm:text-4xl"
+            >
+              Image Scrapper
+            </h1>
+          </Link>
         </div>
 
         <div></div>
